@@ -1,0 +1,38 @@
+services:
+  # --- SERVICIO 1: TU PROXY ---
+  nginx-proxy:
+    image: nginx:latest
+    container_name: urbanikad_nginx_maestro
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./conf.d:/etc/nginx/conf.d
+      - ./certs:/etc/nginx/certs
+    networks:
+      - urbanikad-network
+
+  # --- SERVICIO 2: LA BASE DE DATOS ---
+  urbanikad_qa_db:
+    image: postgres:13
+    container_name: urbanikad_qa_db
+    restart: always
+    environment:
+      POSTGRES_USER: urbanikad_admin
+      POSTGRES_PASSWORD: urbanikad2026
+      POSTGRES_DB: urbanikad_db
+    volumes:
+      # Usamos un volumen persistente
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - urbanikad-network
+
+# Conectamos todo a la red existente
+networks:
+  urbanikad-network:
+    external: true
+
+# Definimos el volumen para los datos
+volumes:
+  db_data:
